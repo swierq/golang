@@ -1,0 +1,26 @@
+name: Go Lint, Test And Build
+run-name: ${{ github.actor }} is Testing And Building 🚀
+on: [push]
+jobs:
+  Run-Go-Lint-Test-Build:
+    runs-on: ubuntu-latest
+    steps:      
+      - name: Check out repository code
+        uses: actions/checkout@v4  
+      - name: Setup Go environment
+        uses: actions/setup-go@v4.1.0
+        with:    
+          go-version: 1.21.4
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:      
+          version: v1.55.2
+      - name: Make Test
+        continue-on-error: false
+        run: make test
+      - name: Make Build
+        continue-on-error: false
+        run: make build
+      - name: Make Clean
+        continue-on-error: false
+        run: make clean

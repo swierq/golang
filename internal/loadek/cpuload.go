@@ -1,5 +1,6 @@
 package loadek
 
-func CpuLoad() string {
+// CPULoad creates artificial load on CPU.
+func CPULoad() string {
 	return "CpuLoad..."
 }
