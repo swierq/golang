@@ -3,6 +3,7 @@ export ANSIBLE_TIMEOUT=1
 # Have ansible command output status in JSON
 # export ANSIBLE_LOAD_CALLBACK_PLUGINS=true
 # export ANSIBLE_STDOUT_CALLBACK=json
+.PHONY: test build fmt
 
 build:
 	go build -o bin/loadek cmd/loadek/main.go
