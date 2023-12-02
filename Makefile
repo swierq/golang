@@ -7,12 +7,14 @@ export ANSIBLE_TIMEOUT=1
 
 build:
 	go build -o bin/loadek cmd/loadek/main.go
+	go build -o bin/kubek cmd/kubek/main.go
 
 fmt:
-	go fmt
+	find . -type f -name \*.go -print0 | xargs -0 -I{} go fmt {}
 
 clean:
-	rm -rf bin/loadek
+	rm -rf bin/*
+
 
 
 test:
