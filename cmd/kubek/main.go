@@ -14,7 +14,8 @@ import (
 
 func main() {
 	root := cmd.New()
-	deplName := root.String("name", "deployment", "Deployment name..")
+	cfgFile := root.String("cfgfile", "scaler.yml", "Config File.")
+	interval := root.Int("interval", 5, "Interval in seconds.")
 	debug := root.Bool("debug", false, "Debug logging")
 	_ = root.Parse()
 
@@ -42,7 +43,7 @@ func main() {
 	}()
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go kubek.Deployment(ctx, &wg, *deplName)
+	go kubek.DeploymentScaler(ctx, &wg, *cfgFile, *interval)
 	wg.Wait()
 	fmt.Println("Finished.")
 }
