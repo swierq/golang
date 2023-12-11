@@ -35,7 +35,8 @@ func main() {
 
 func cpuLoad(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	number, err := strconv.ParseInt(vars["number"], 10, 64)
+	number64, err := strconv.ParseInt(vars["number"], 10, 0)
+	number := int(number64)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
