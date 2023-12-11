@@ -7,21 +7,20 @@ import (
 )
 
 func TestIsPrime(t *testing.T) {
-	result, err := isPrime(17)
-	require.Nil(t, err, "There should be no error")
+	result := isPrime(17)
 	require.Equal(t, true, result, "result should be True")
 
-	result, err = isPrime(20)
-	require.Nil(t, err, "There should be no error")
+	result = isPrime(20)
 	require.Equal(t, false, result, "result should be False")
 }
 
 func TestCPULoad(t *testing.T) {
-	result, err := CPULoad(17)
+	result, err := CPULoad(2)
 	require.Nil(t, err, "There should be no error")
-	require.Equal(t, "true", result, "result should be True")
+	require.Equal(t, "[2 3]", result, "result should be True")
 
-	result, err = CPULoad(20)
+	result, err = CPULoad(6)
 	require.Nil(t, err, "There should be no error")
-	require.Equal(t, "false", result, "result should be False")
+	require.Equal(t, "[2 3 5 7 11 13]", result, "result should be True")
+
 }
