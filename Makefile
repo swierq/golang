@@ -7,6 +7,7 @@ export ANSIBLE_TIMEOUT=1
 
 build:
 	go build -o bin/loadek cmd/loadek/main.go
+	go build -o bin/premierleague cmd/premierleague/main.go
 
 fmt:
 	go fmt
