@@ -44,7 +44,7 @@ func TestDummy(t *testing.T) {
 			Header:     make(http.Header),
 		}
 	})
-	err := AllFixtures("", client)
+	err := AllFixtures("", client, 10, 10)
 	require.NoError(t, err, "There should be no error.")
 	result := 1
 	require.Equal(t, 1, result, "Result should be 1.")
