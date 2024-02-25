@@ -10,8 +10,7 @@ type APIClient struct {
 	Client *http.Client
 }
 
-func NewClient() APIClient {
-	client := &http.Client{}
+func NewClient(client *http.Client) APIClient {
 	return APIClient{Client: client}
 }
 
