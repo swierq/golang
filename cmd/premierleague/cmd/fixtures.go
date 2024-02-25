@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/spf13/cobra"
 	"github.com/swierq/golang/internal/premierleague"
@@ -42,7 +43,8 @@ func init() {
 }
 
 func allFixtures(team string) {
-	err := premierleague.AllFixtures(team)
+	client := http.Client{}
+	err := premierleague.AllFixtures(team, &client)
 	if err != nil {
 		fmt.Printf("Something is wrong: %v", err)
 	}

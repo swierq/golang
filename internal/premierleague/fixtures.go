@@ -2,6 +2,7 @@ package premierleague
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 )
 
@@ -36,8 +37,8 @@ type StatElement struct {
 	Element int `json:"element"`
 }
 
-func AllFixtures(team string) error {
-	client := NewClient()
+func AllFixtures(team string, httpClient *http.Client) error {
+	client := NewClient(httpClient)
 	fixtures, err := client.GetFixtures()
 	if err != nil {
 		panic(err)

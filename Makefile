@@ -10,7 +10,7 @@ build:
 	go build -o bin/premierleague cmd/premierleague/main.go
 
 fmt:
-	go fmt
+	find . -name \*.go -type f -print0 | xargs -0 -I{} go fmt {}
 
 clean:
 	rm -rf bin/loadek
