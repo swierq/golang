@@ -23,7 +23,9 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		team, _ := cmd.Flags().GetString("team")
-		allFixtures(team)
+		dback, _ := cmd.Flags().GetInt("dbck")
+		dfwd, _ := cmd.Flags().GetInt("dfwd")
+		allFixtures(team, dback, dfwd)
 	},
 }
 
@@ -39,12 +41,14 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// fixturesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	fixturesCmd.Flags().StringP("team", "t", "", "Help message for toggle")
+	fixturesCmd.Flags().StringP("team", "t", "", "Team, eg MUN.")
+	fixturesCmd.Flags().Int("dbck", 10, "Number of days to look back.")
+	fixturesCmd.Flags().Int("dfwd", 10, "Number of days to look forward.")
 }
 
-func allFixtures(team string) {
+func allFixtures(team string, dbck, dfwd int) {
 	client := http.Client{}
-	err := premierleague.AllFixtures(team, &client)
+	err := premierleague.AllFixtures(team, &client, dbck, dfwd)
 	if err != nil {
 		fmt.Printf("Something is wrong: %v", err)
 	}

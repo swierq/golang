@@ -37,7 +37,7 @@ type StatElement struct {
 	Element int `json:"element"`
 }
 
-func AllFixtures(team string, httpClient *http.Client) error {
+func AllFixtures(team string, httpClient *http.Client, daysBack, daysForward int) error {
 	client := NewClient(httpClient)
 	fixtures, err := client.GetFixtures()
 	if err != nil {
@@ -55,8 +55,18 @@ func AllFixtures(team string, httpClient *http.Client) error {
 		panic(err)
 	}
 
+	now := time.Now()
+	durationStart, _ := time.ParseDuration(fmt.Sprintf("-%dh", daysBack*24))
+	durationEnd, _ := time.ParseDuration(fmt.Sprintf("%dh", daysForward*24))
+
+	start := now.Add(durationStart)
+	end := now.Add(durationEnd)
+
 	fmt.Println("All Fixtures:")
 	for _, fix := range fixtures {
+		if !(fix.KickoffTime.After(start) && fix.KickoffTime.Before(end)) {
+			continue
+		}
 		home, err := bootstrapData.GetTeamName(fix.HomeTeam)
 		if err != nil {
 			return err
@@ -69,7 +79,14 @@ func AllFixtures(team string, httpClient *http.Client) error {
 		if team != "" && home != team && away != team {
 			continue
 		}
-		fmt.Printf("%s  %d : %d %s - %s\n", home, fix.HomeTeamScore, fix.AwayTeamScore, away, fix.KickoffTime)
+		fmt.Printf("%s  %d : %d %s - %s", home, fix.HomeTeamScore, fix.AwayTeamScore, away, fix.KickoffTime)
+		if fix.Finished {
+			fmt.Println(" - FINISHED")
+		} else if fix.Started {
+			fmt.Println(" - PLAYING")
+		} else {
+			fmt.Println("")
+		}
 	}
 
 	return nil
