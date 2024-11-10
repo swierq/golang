@@ -1,20 +1,22 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/posener/cmd"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/swierq/golang/internal/loadek"
+	"github.com/swierq/golang/pkg/webapp"
 )
+
+type loadekApp struct {
+	webapp *webapp.App
+}
 
 func main() {
 	root := cmd.New()
-	port := root.String("port", "8080", "Listen Port")
+	port := root.Int("port", 8080, "Listen Port")
 	debug := root.Bool("debug", false, "Debug logging")
 	_ = root.Parse()
 
@@ -23,32 +25,32 @@ func main() {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 
-	router := mux.NewRouter()
-	router.HandleFunc("/cpuload/{number}", cpuLoad)
-	log.Info().Msgf("Starting Server on port: %s", *port)
-	err := http.ListenAndServe(fmt.Sprintf(":%s", *port), router)
+	config := webapp.NewConfig(webapp.WithPort(uint16(*port)))
+	app := &loadekApp{webapp: webapp.NewApp(config)}
+
+	app.webapp.Router.HandleFunc("GET /cpuload/{number}", app.cpuLoad)
+	err := app.webapp.Serve()
 	if err != nil {
-		log.Error().Msg("Something went wrong. Exiting.")
 		panic(err)
 	}
 }
 
-func cpuLoad(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	number64, err := strconv.ParseInt(vars["number"], 10, 0)
+func (app *loadekApp) cpuLoad(w http.ResponseWriter, r *http.Request) {
+	num := r.PathValue("number")
+	number64, err := strconv.ParseInt(num, 10, 0)
 	number := int(number64)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.webapp.BadRequestResponse(w, r, err)
 		return
 	}
 	result, err := loadek.CPULoad(number)
 
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.webapp.ServerErrorResponse(w, r, err)
 		return
 	}
-	_, err = fmt.Fprint(w, result)
+	err = app.webapp.WriteJSON(w, http.StatusOK, webapp.Envelope{"result": result}, nil)
 	if err != nil {
-		panic(err)
+		app.webapp.LogError(r, err)
 	}
 }

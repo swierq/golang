@@ -1,9 +1,17 @@
 name: Go Lint, Test And Build
 run-name: ${{ github.actor }} is Testing And Building 🚀
-on: [push]
+on:
+  pull_request:
+    types: [opened, synchronize, edited, ready_for_review]
+    branches:
+      - master
 jobs:
   Run-Go-Lint-Test-Build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -21,6 +29,10 @@ jobs:
       - name: Make Build
         continue-on-error: false
         run: make build
+      - name: check test coverage
+        uses: vladopajic/go-test-coverage@v2
+        with:
+          config: ./.testcoverage.yml
       - name: Make Clean
         continue-on-error: false
         run: make clean
