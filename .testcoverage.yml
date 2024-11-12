@@ -1,0 +1,36 @@
+profile: cover.out
+
+local-prefix: "github.com/swierq/golang"
+
+# Holds coverage thresholds percentages, values should be in range [0-100]
+threshold:
+  # (optional; default 0)
+  # The minimum coverage that each file should have
+  file: 50
+
+  # (optional; default 0)
+  # The minimum coverage that each package should have
+  package: 50
+
+  # (optional; default 0)
+  # The minimum total coverage project should have
+  total: 50
+
+# Holds regexp rules which will override thresholds for matched files or packages
+# using their paths.
+#
+# First rule from this list that matches file or package is going to apply
+# new threshold to it. If project has multiple rules that match same path,
+# override rules should be listed in order from specific to more general rules.
+override:
+  - threshold: 0
+    path: ^.*premierleague.*$
+
+# Holds regexp rules which will exclude matched files or packages
+# from coverage statistics
+exclude:
+  paths:
+    - \.pb\.go$ # excludes all protobuf generated files
+    - ^pkg/bar # exclude package `pkg/bar`
+    - main.go
+    - pkg/webapp/server.go

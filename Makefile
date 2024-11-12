@@ -15,10 +15,12 @@ fmt:
 clean:
 	rm -rf bin/loadek
 
-
 test:
-	go test ./... -coverprofile cover.out -v 2>&1
+	go test ./... -coverprofile cover.out -covermode=atomic -coverpkg=./... -v 2>&1
 	go tool cover -func cover.out 2>&1
 
 clean-test-cache:
 	go clean -testcache
+
+lint:
+	golangci-lint run -v
