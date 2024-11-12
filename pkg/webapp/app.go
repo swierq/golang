@@ -3,6 +3,7 @@ package webapp
 import (
 	"log/slog"
 	"net/http"
+	"os"
 )
 
 type App struct {
@@ -12,12 +13,18 @@ type App struct {
 }
 
 func NewApp(config *Config) *App {
+	slogLevel, err := config.GetSlogLevel()
 	app := &App{
 		Config: config,
-		Logger: slog.Default(),
+		Logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slogLevel,
+		})),
 		Router: http.NewServeMux(),
 	}
 	app.Router.HandleFunc("GET /health", app.HealthcheckHandler)
+	if err != nil {
+		app.Logger.Warn("Default log level used", "error", err.Error())
+	}
 	return app
 }
 
