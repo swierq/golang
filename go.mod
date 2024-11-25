@@ -3,12 +3,11 @@ module github.com/swierq/golang
 go 1.23
 
 require (
-	github.com/gorilla/mux v1.8.1
 	github.com/posener/cmd v1.3.4
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 )
 
 require (
