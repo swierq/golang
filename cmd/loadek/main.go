@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/posener/cmd"
-	"github.com/rs/zerolog"
 	"github.com/swierq/golang/internal/loadek"
 	"github.com/swierq/golang/pkg/webapp"
 )
@@ -18,13 +17,7 @@ type loadekApp struct {
 func main() {
 	root := cmd.New()
 	port := root.Int("port", 8080, "Listen Port")
-	debug := root.Bool("debug", false, "Debug logging")
 	_ = root.Parse()
-
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	if *debug {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	}
 
 	config := webapp.NewConfig(webapp.WithPort(uint16(*port)))
 	app := &loadekApp{webapp: webapp.NewApp(config)}
