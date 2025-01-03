@@ -11,6 +11,7 @@ import (
 )
 
 type loadekApp struct {
+	loadek *loadek.App
 	webapp *webapp.App
 }
 
@@ -43,7 +44,7 @@ func (app *loadekApp) cpuLoad(w http.ResponseWriter, r *http.Request) {
 		app.webapp.BadRequestResponse(w, r, err)
 		return
 	}
-	result, err := loadek.CPULoad(number)
+	result, err := app.loadek.CPULoad(number)
 
 	if err != nil {
 		app.webapp.ServerErrorResponse(w, r, err)
