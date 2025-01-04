@@ -6,13 +6,10 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 )
 
-func (app *App) Serve() error {
+func (app *App) Serve(ctx context.Context) error {
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", app.Config.Port),
 		Handler:      app.GetRouter(),
@@ -25,10 +22,8 @@ func (app *App) Serve() error {
 	shutdownError := make(chan error)
 
 	go func() {
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-		s := <-quit
-		app.Logger.Info("shutting down server", "signal", s.String())
+		<-ctx.Done()
+		app.Logger.Info("shutting down server on context done")
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		shutdownError <- srv.Shutdown(ctx)
