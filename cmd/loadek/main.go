@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 
 	"github.com/posener/cmd"
@@ -13,46 +11,33 @@ import (
 	"github.com/swierq/golang/pkg/webapp"
 )
 
-type loadekApp struct {
-	loadek *loadek.App
-	webapp *webapp.App
-}
-
 func main() {
 	root := cmd.New()
 	port := root.Int("port", 8080, "Listen Port")
+	cpuMi := root.Int("cpumi", 100, "Cpu milocores")
+	memMb := root.Int("memmb", 20, "Memory mb")
 	_ = root.Parse()
 
-	config := webapp.NewConfig(webapp.WithPort(uint16(*port)), webapp.WithLogLevel("info"))
-	app := &loadekApp{webapp: webapp.NewApp(config)}
+	//TODO: should return error also
+	webConfig := webapp.NewConfig(webapp.WithPort(uint16(*port)), webapp.WithLogLevel("info"))
+	//TODO: should return error also
+	webapp := webapp.NewApp(webConfig)
+
+	//TODO: should return error also
+	loadekConfig := loadek.NewConfig(loadek.WithCpuLoadMi(*cpuMi), loadek.WithMemLoadMb(*memMb))
+	//TODO: should return error also
+	loadek := loadek.NewApp(loadek.WithConfig(loadekConfig))
+
+	app, err := newApp(withLoadek(loadek), withWebApp(webapp))
+	if err != nil {
+		panic(err)
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-
-	app.webapp.Router.HandleFunc("GET /cpuload/{number}", app.cpuLoad)
 	go waitOnSignal(cancel)
-	err := app.webapp.Serve(ctx)
+	err = app.webapp.Serve(ctx)
 	if err != nil {
 		app.webapp.Logger.Error("Webserver problem", "error", err)
-	}
-}
-
-func (app *loadekApp) cpuLoad(w http.ResponseWriter, r *http.Request) {
-	num := r.PathValue("number")
-	number64, err := strconv.ParseInt(num, 10, 0)
-	number := int(number64)
-	if err != nil {
-		app.webapp.BadRequestResponse(w, r, err)
-		return
-	}
-	result, err := app.loadek.CPULoad(number)
-
-	if err != nil {
-		app.webapp.ServerErrorResponse(w, r, err)
-		return
-	}
-	err = app.webapp.WriteJSON(w, http.StatusOK, webapp.Envelope{"result": result}, nil)
-	if err != nil {
-		app.webapp.LogError(r, err)
 	}
 }
 

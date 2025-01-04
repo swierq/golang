@@ -1,0 +1,20 @@
+package main
+
+import (
+	"fmt"
+	"github.com/swierq/golang/internal/loadek"
+	"github.com/swierq/golang/internal/uihtmx"
+)
+
+templ ExamplePartial() {
+	<h1 class={ uihtmx.Label1 }>Example partial2</h1>
+}
+
+templ ConfigPartial(cfg *loadek.Config) {
+	<div class={ uihtmx.CardBox }>
+		<h5 class={ uihtmx.CardHeader }>Config</h5>
+		<span class={ uihtmx.Label1 }>Cpu milicores: </span><span class={ uihtmx.Text1 }>{ fmt.Sprintf("%d",cfg.CpuLoadMi) }</span>
+		<br/>
+		<span class={ uihtmx.Label1 }>Cpu milicores: </span><span class={ uihtmx.Text1 }>{ fmt.Sprintf("%d",cfg.MemLoadMb) }</span>
+	</div>
+}
