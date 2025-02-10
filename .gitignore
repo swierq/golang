@@ -21,3 +21,14 @@
 go.work
 
 bin/*
+
+# templ
+
+*_templ.go
+
+node_modules/
+package-lock.json
+
+# tailwind
+internal/uihtmx/ui/assets/css/tailwind.css
+tmp/

@@ -1,4 +1,4 @@
-package webapp
+package main
 
 import (
 	"bytes"
@@ -6,32 +6,37 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/swierq/golang/internal/loadek"
+	"github.com/swierq/golang/pkg/webapp"
 )
 
-func newTestApp(t *testing.T) *App {
-	config := &Config{
-		Port:     8080,
-		LogLevel: "info",
-	}
+func newTestApp() *loadekApp {
+	webConfig := webapp.NewConfig(webapp.WithPort(uint16(4040)), webapp.WithLogLevel("info"))
+	webapp := webapp.NewApp(webConfig)
 
-	app := NewApp(config)
+	loadekConfig := loadek.NewConfig(loadek.WithCpuLoadMi(20), loadek.WithMemLoadMb(100))
+	loadek := loadek.NewApp(loadek.WithConfig(loadekConfig))
+
+	app, _ := newApp(withLoadek(loadek), withWebApp(webapp))
 	return app
+
 }
 
-type TestServer struct {
+type testServer struct {
 	*httptest.Server
 }
 
-func NewTestServer(h http.Handler) *TestServer {
+func newTestServer(h http.Handler) *testServer {
 	ts := httptest.NewServer(h)
 
 	ts.Client().CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}
-	return &TestServer{ts}
+	return &testServer{ts}
 }
 
-func (ts *TestServer) Get(t *testing.T, urlPath string, partial bool) (int, http.Header, string) {
+func (ts *testServer) get(t *testing.T, urlPath string, partial bool) (int, http.Header, string) {
 	req, err := http.NewRequest(http.MethodGet, ts.URL+urlPath, nil)
 	if err != nil {
 		t.Fatal(err)

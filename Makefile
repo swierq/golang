@@ -6,7 +6,7 @@ export ANSIBLE_TIMEOUT=1
 .PHONY: test build fmt
 
 build:
-	go build -o bin/loadek cmd/loadek/main.go
+	go build -o bin/loadek ./cmd/loadek
 	go build -o bin/premierleague cmd/premierleague/main.go
 
 fmt:
@@ -24,3 +24,9 @@ clean-test-cache:
 
 lint:
 	golangci-lint run -v
+
+install-dev-deps:
+	mkdir -p ~/bin
+	wget -q -O ~/go/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.17/tailwindcss-linux-x64
+	chmod u+x ~/go/bin/tailwindcss
+	npm install

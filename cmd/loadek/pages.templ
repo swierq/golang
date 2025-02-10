@@ -1,0 +1,5 @@
+package main
+
+templ DashboardPage() {
+	<div hx-trigger="load" hx-get="/api/config" hx-target="this" hx-swap="innerHTML"></div>
+}

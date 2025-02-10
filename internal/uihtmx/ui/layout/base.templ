@@ -1,0 +1,81 @@
+package layout
+
+const (
+	defaultTitle = "Default title"
+)
+
+templ Base(title, description string) {
+	<!DOCTYPE html>
+	<html lang="en" class="ctp-mocha bg-ctp-base h-full">
+		<head>
+			<link href="/assets/css/tailwind.css" rel="stylesheet" hx-preserve="true"/>
+			<link href="/assets/css/fas.min.css" rel="stylesheet" hx-preserve="true"/>
+			<script src="/assets/js/htmx.min.js" hx-preserve="true"></script>
+			<script src="/assets/js/head-support.min.js" hx-preserve="true" defer></script>
+			<script src="/assets/js/alpine.min.js" hx-preserve="true" defer></script>
+			<script src="/assets/js/toastify.min.js" hx-preserve="true" defer></script>
+		</head>
+		<body class="h-full" hx-ext="head-support">
+			<div class="min-h-full">
+				<nav class="bg-ctp-base">
+					<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+						<div class="flex h-16 items-center justify-between">
+							<div class="flex items-center">
+								<div class="shrink-0">
+									<a class="size-8 fas fa-house-chimney text-ctp-green" href="#" alt="Loadek"></a>
+								</div>
+								<div class="hidden md:block">
+									<div class="ml-10 flex items-baseline space-x-4">
+										<a href="#" class="rounded-md bg-ctp-base px-3 py-2 text-sm font-sm text-ctp-green" aria-current="page">Dashboard</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</nav>
+				<header class="bg-ctp-base">
+					<div class="mx-auto max-w-7xl px-4 py-1 sm:px-6 lg:px-8">
+						<h1 class="text-sm font-bold tracking-tight text-ctp-text">Dashboard</h1>
+					</div>
+				</header>
+				<main>
+					<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-ctp-text">
+						<!-- Your content -->
+						{ children... }
+					</div>
+				</main>
+			</div>
+		</body>
+	</html>
+}
+
+templ WithBase(component templ.Component, title string, description string, fullPage bool) {
+	if fullPage {
+		@Base(title, description) {
+			@component
+		}
+	} else {
+		<head hx-head="merge">
+			<title>{ getTitle(title) }</title>
+			@descriptionMeta(description)
+		</head>
+		@component
+	}
+}
+
+templ descriptionMeta(description string) {
+	if description != "" {
+		<meta name="description" content={ description }/>
+	}
+}
+
+func getTitle(title string) string {
+	if title == "" {
+		return "No Title"
+	}
+	return title
+}
+
+templ Example() {
+	<h1>Example</h1>
+}
