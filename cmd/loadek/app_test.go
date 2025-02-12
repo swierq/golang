@@ -16,7 +16,7 @@ func TestNewApp(t *testing.T) {
 	webConfig := webapp.NewConfig()
 	//TODO: use option functions to set the port and log level
 	webapp := webapp.NewApp(webConfig)
-	loadekConfig := loadek.NewConfig(loadek.WithCpuLoadMi(10), loadek.WithMemLoadMb(10))
+	loadekConfig, _ := loadek.NewConfig(loadek.WithCpuLoadMi(10), loadek.WithMemLoadMb(10))
 	loadek := loadek.NewApp(loadek.WithConfig(loadekConfig))
 	app, err = newApp(withLoadek(loadek), withWebApp(webapp))
 	assert.Nil(t, err)

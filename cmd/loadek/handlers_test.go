@@ -48,7 +48,7 @@ func TestConfigHandler(t *testing.T) {
 }
 
 func TestUiHandler(t *testing.T) {
-	code, _, body := ts.get(t, "/ui", false)
+	code, _, body := ts.get(t, "/", false)
 	assert.Equal(t, http.StatusOK, code)
 	assert.Contains(t, body, "</body>")
 }

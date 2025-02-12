@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"github.com/posener/cmd"
@@ -15,7 +16,7 @@ func main() {
 	root := cmd.New()
 	port := root.Int("port", 8080, "Listen Port")
 	cpuMi := root.Int("cpumi", 100, "Cpu milocores")
-	memMb := root.Int("memmb", 20, "Memory mb")
+	memMb := root.Int("memmb", 200, "Memory mb")
 	_ = root.Parse()
 
 	//TODO: should return error also
@@ -24,7 +25,7 @@ func main() {
 	webapp := webapp.NewApp(webConfig)
 
 	//TODO: should return error also
-	loadekConfig := loadek.NewConfig(loadek.WithCpuLoadMi(*cpuMi), loadek.WithMemLoadMb(*memMb))
+	loadekConfig, _ := loadek.NewConfig(loadek.WithCpuLoadMi(*cpuMi), loadek.WithMemLoadMb(*memMb))
 	//TODO: should return error also
 	loadek := loadek.NewApp(loadek.WithConfig(loadekConfig))
 
@@ -34,11 +35,18 @@ func main() {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	go waitOnSignal(cancel)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go app.loadek.LoadSystem(ctx, &wg)
+
 	err = app.webapp.Serve(ctx)
 	if err != nil {
 		app.webapp.Logger.Error("Webserver problem", "error", err)
 	}
+	wg.Wait()
 }
 
 func waitOnSignal(cancel context.CancelFunc) {

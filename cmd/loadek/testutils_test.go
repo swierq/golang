@@ -15,7 +15,7 @@ func newTestApp() *loadekApp {
 	webConfig := webapp.NewConfig(webapp.WithPort(uint16(4040)), webapp.WithLogLevel("info"))
 	webapp := webapp.NewApp(webConfig)
 
-	loadekConfig := loadek.NewConfig(loadek.WithCpuLoadMi(20), loadek.WithMemLoadMb(100))
+	loadekConfig, _ := loadek.NewConfig(loadek.WithCpuLoadMi(20), loadek.WithMemLoadMb(100))
 	loadek := loadek.NewApp(loadek.WithConfig(loadekConfig))
 
 	app, _ := newApp(withLoadek(loadek), withWebApp(webapp))

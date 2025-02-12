@@ -15,6 +15,6 @@ templ ConfigPartial(cfg *loadek.Config) {
 		<h5 class={ uihtmx.CardHeader }>Config</h5>
 		<span class={ uihtmx.Label1 }>Cpu milicores: </span><span class={ uihtmx.Text1 }>{ fmt.Sprintf("%d",cfg.CpuLoadMi) }</span>
 		<br/>
-		<span class={ uihtmx.Label1 }>Cpu milicores: </span><span class={ uihtmx.Text1 }>{ fmt.Sprintf("%d",cfg.MemLoadMb) }</span>
+		<span class={ uihtmx.Label1 }>Memory mb: </span><span class={ uihtmx.Text1 }>{ fmt.Sprintf("%d",cfg.MemLoadMb) }</span>
 	</div>
 }
