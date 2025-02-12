@@ -16,10 +16,14 @@ fmt:
 	find . -name \*.go -type f -print0 | xargs -0 -I{} go fmt {}
 
 clean:
-	rm -rf bin/loadek
+	rm -rf bin/*
 
 test: generate
 	go test ./... -coverprofile cover.out -covermode=atomic -coverpkg=./... -v 2>&1
+	go tool cover -func cover.out 2>&1
+
+test-short: generate
+	go test -short ./... -coverprofile cover.out -covermode=atomic -coverpkg=./... -v 2>&1
 	go tool cover -func cover.out 2>&1
 
 clean-test-cache:
