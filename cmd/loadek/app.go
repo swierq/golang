@@ -15,7 +15,7 @@ type loadekApp struct {
 }
 
 func (app *loadekApp) setupRouter() {
-	app.webapp.Router.HandleFunc("GET /ui", app.uiHandler)
+	app.webapp.Router.HandleFunc("GET /{$}", app.uiHandler)
 	app.webapp.Router.HandleFunc("GET /api/config", app.configHandler)
 	app.webapp.Router.Handle("GET /assets/", http.FileServerFS(ui.Assets))
 }

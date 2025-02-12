@@ -13,7 +13,7 @@ func TestApp(t *testing.T) {
 	assert.Nil(t, app.Config)
 	assert.Nil(t, app.Logger)
 
-	cfg := NewConfig()
+	cfg, _ := NewConfig()
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{}))
 	app = NewApp(WithConfig(cfg), WithLogger(logger))
 
