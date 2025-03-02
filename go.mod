@@ -3,7 +3,7 @@ module github.com/swierq/golang
 go 1.23
 
 require (
-	github.com/a-h/templ v0.3.819
+	github.com/a-h/templ v0.3.833
 	github.com/posener/cmd v1.3.4
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
