@@ -1,8 +1,9 @@
 module github.com/swierq/golang
 
 go 1.24.0
+
 require (
-	github.com/a-h/templ v0.3.833
+	github.com/a-h/templ v0.3.857
 	github.com/posener/cmd v1.3.4
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.0
@@ -26,7 +27,7 @@ require (
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
