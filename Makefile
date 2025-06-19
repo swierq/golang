@@ -10,6 +10,7 @@ generate:
 
 build: generate
 	go build -o bin/loadek ./cmd/loadek
+	go build -o bin/echopoc ./cmd/echopoc
 	go build -o bin/premierleague cmd/premierleague/main.go
 
 fmt:
