@@ -1,59 +1,45 @@
 package main
 
 import (
-	"fmt"
-	"io/fs"
-	"net/http"
-	"strings"
-	"time"
+	"log/slog"
+	"os"
 
-	"github.com/labstack/echo/v4"
-	"github.com/swierq/golang/internal/uihtmx"
-	"github.com/swierq/golang/internal/uihtmx/ui"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	assets, _ := fs.Sub(ui.Assets, "assets")
-	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-	e.GET("/headers", printHeaders)
-	e.GET("/setcookie", writeCookie)
-	e.GET("/cookies", printCookies)
-	e.StaticFS("/assets/", assets)
-	e.Logger.Fatal(e.Start(":1323"))
-}
-
-func printHeaders(c echo.Context) error {
-	headers := ""
-	for k, v := range c.Request().Header {
-		headers = fmt.Sprintf("%s\n%s: %s\n", headers, k, v)
+	ca := &cli.App{
+		Flags: []cli.Flag{
+			&cli.IntFlag{
+				Name:    "port",
+				Value:   1323,
+				Usage:   "port",
+				EnvVars: []string{"ECHOPOC_PORT"},
+			},
+		},
+		Action: func(cCtx *cli.Context) error {
+			return run(cCtx)
+		},
 	}
-	return uihtmx.RenderPage(c.Response().Writer, TextPage(nl2br(headers)), "Cookies", "Description")
-}
-
-func writeCookie(c echo.Context) error {
-	cookie := new(http.Cookie)
-	cookie.Name = "username"
-	cookie.Value = "test"
-	cookie.Expires = time.Now().Add(1 * time.Minute)
-	c.SetCookie(cookie)
-	return uihtmx.RenderPage(c.Response().Writer, TextPage("cookie written"), "Cookies", "Description")
-}
-
-func printCookies(c echo.Context) error {
-	cookies := c.Cookies()
-	if len(cookies) == 0 {
-		return uihtmx.RenderPage(c.Response().Writer, TextPage("no cookies set"), "Cookies", "Description")
+	if err := ca.Run(os.Args); err != nil {
+		slog.Error("could not start application", "error", err)
 	}
-	cookieList := ""
-	for _, cookie := range cookies {
-		cookieList = fmt.Sprintf("%s\n%s: %s", cookieList, cookie.Name, cookie.Value)
-	}
-	return uihtmx.RenderPage(c.Response().Writer, TextPage(cookieList), "Cookies", "Description")
+
 }
 
-func nl2br(text string) string {
-	return strings.Replace(text, "\n", "<br>", -1)
+func run(cCtx *cli.Context) error {
+	cfg, err := newConfig(withConfigPort(cCtx.Int("port")))
+	if err != nil {
+		slog.Error("failed to create config", "error", err)
+		panic(err)
+	}
+
+	a, err := newApp(withConfig(cfg))
+	if err != nil {
+		slog.Error("failed to create app", "error", err)
+		panic(err)
+	}
+	_ = a.Start()
+	return nil
+
 }
