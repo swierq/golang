@@ -16,6 +16,36 @@ func main() {
 				Usage:   "port",
 				EnvVars: []string{"ECHOPOC_PORT"},
 			},
+			&cli.StringFlag{
+				Name:    "tenantID",
+				Value:   "",
+				Usage:   "tenant ID for OAuth2",
+				EnvVars: []string{"ECHOPOC_TENANT_ID"},
+			},
+			&cli.StringFlag{
+				Name:    "clientID",
+				Value:   "",
+				Usage:   "client ID for OAuth2",
+				EnvVars: []string{"ECHOPOC_CLIENT_ID"},
+			},
+			&cli.StringFlag{
+				Name:    "clientSecret",
+				Value:   "",
+				Usage:   "client Secret for OAuth2",
+				EnvVars: []string{"ECHOPOC_CLIENT_SECRET"},
+			},
+			&cli.StringFlag{
+				Name:    "redirectURL",
+				Value:   "",
+				Usage:   "redirect url for OAuth2",
+				EnvVars: []string{"ECHOPOC_REDIRECT_URL"},
+			},
+			&cli.StringFlag{
+				Name:    "appScope",
+				Value:   "",
+				Usage:   "appScope url for OAuth2",
+				EnvVars: []string{"ECHOPOC_APP_SCOPE"},
+			},
 		},
 		Action: func(cCtx *cli.Context) error {
 			return run(cCtx)
@@ -28,7 +58,15 @@ func main() {
 }
 
 func run(cCtx *cli.Context) error {
-	cfg, err := newConfig(withConfigPort(cCtx.Int("port")))
+	cfg, err := newConfig(
+		withConfigPort(cCtx.Int("port")),
+		withConfigTenantID(cCtx.String("tenantID")),
+		withConfigClientID(cCtx.String("clientID")),
+		withConfigClientSecret(cCtx.String("clientSecret")),
+		withConfigRedirectURL(cCtx.String("redirectURL")),
+		withConfigAppScope(cCtx.String("appScope")),
+	)
+
 	if err != nil {
 		slog.Error("failed to create config", "error", err)
 		panic(err)
