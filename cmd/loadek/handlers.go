@@ -4,7 +4,14 @@ import (
 	"net/http"
 
 	"github.com/swierq/golang/internal/uihtmx"
+	"github.com/swierq/golang/internal/uihtmx/ui/layout"
 	"github.com/swierq/golang/pkg/webapp"
+)
+
+var ( // app is the main application instance
+	menu = layout.Menu{Items: []layout.MenuItem{
+		layout.MenuItem{Title: "Dashboard", Path: "#"},
+	}}
 )
 
 // TODO: clean this
@@ -28,5 +35,5 @@ func (app *loadekApp) configHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *loadekApp) uiHandler(w http.ResponseWriter, r *http.Request) {
-	_ = uihtmx.RenderPage(w, DashboardPage(), "UI", "Description")
+	_ = uihtmx.RenderPage(w, DashboardPage(), menu, "UI", "Description")
 }

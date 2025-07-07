@@ -4,7 +4,7 @@ const (
 	defaultTitle = "Default title"
 )
 
-templ Base(title, description string) {
+templ Base(menu Menu, title, description string) {
 	<!DOCTYPE html>
 	<html lang="en" class="ctp-mocha bg-ctp-base h-full">
 		<head>
@@ -26,7 +26,10 @@ templ Base(title, description string) {
 								</div>
 								<div class="hidden md:block">
 									<div class="ml-10 flex items-baseline space-x-4">
-										<a href="#" class="rounded-md bg-ctp-base px-3 py-2 text-sm font-sm text-ctp-green" aria-current="page">Dashboard</a>
+										<a href="/" class="rounded-md bg-ctp-base px-3 py-2 text-sm font-sm text-ctp-green" aria-current="page">Home</a>
+										for _, item  := range menu.Items {
+											<a href={ templ.SafeURL(item.Path) } class="rounded-md bg-ctp-base px-3 py-2 text-sm font-sm text-ctp-green" aria-current="page">{ item.Title }</a>
+										}
 									</div>
 								</div>
 							</div>
@@ -49,9 +52,9 @@ templ Base(title, description string) {
 	</html>
 }
 
-templ WithBase(component templ.Component, title string, description string, fullPage bool) {
+templ WithBase(component templ.Component, menu Menu, title string, description string, fullPage bool) {
 	if fullPage {
-		@Base(title, description) {
+		@Base(menu, title, description) {
 			@component
 		}
 	} else {
