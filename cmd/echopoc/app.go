@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/MicahParks/keyfunc"
 	"github.com/labstack/echo/v4"
 	"github.com/swierq/golang/internal/uihtmx/ui"
 	"golang.org/x/oauth2"
@@ -26,6 +27,7 @@ type app struct {
 	config *config
 	e      *echo.Echo
 	entra  *oauth2.Config
+	jwks   *keyfunc.JWKS
 }
 
 type configOption func(*config) error
@@ -168,6 +170,29 @@ func (app *app) initEcho() error {
 }
 
 func (app *app) Start(ctx context.Context) error {
+
+	//initialize JWKS (JSON Web Key Set) for token validation
+	jwksOptions := keyfunc.Options{
+		Ctx: ctx,
+		RefreshErrorHandler: func(err error) {
+			app.e.Logger.Error("There was an error with the jwt.Keyfunc\nError: %s", err.Error())
+		},
+		RefreshInterval:   time.Hour,
+		RefreshRateLimit:  time.Minute * 5,
+		RefreshTimeout:    time.Second * 10,
+		RefreshUnknownKID: true,
+	}
+
+	jwksURL := fmt.Sprintf("https://login.microsoftonline.com/%s/discovery/v2.0/keys", app.config.TenantID)
+	jwks, err := keyfunc.Get(jwksURL, jwksOptions)
+	if err != nil {
+		app.e.Logger.Error("Failed to create JWKS from resource at the given URL: %s", err.Error())
+		return err
+	}
+	app.jwks = jwks
+	defer app.jwks.EndBackground()
+
+	//Start the Echo server
 	go func() {
 		if err := app.e.Start(fmt.Sprintf(":%d", app.config.Port)); err != nil && err != http.ErrServerClosed {
 			app.e.Logger.Fatal("shutting down the server")
@@ -178,7 +203,7 @@ func (app *app) Start(ctx context.Context) error {
 	<-ctx.Done()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	err := app.e.Shutdown(ctx)
+	err = app.e.Shutdown(ctx)
 	if err != nil {
 		app.e.Logger.Fatal(err)
 	}

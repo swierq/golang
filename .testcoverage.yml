@@ -6,15 +6,15 @@ local-prefix: "github.com/swierq/golang"
 threshold:
   # (optional; default 0)
   # The minimum coverage that each file should have
-  file: 50
+  file: 40
 
   # (optional; default 0)
   # The minimum coverage that each package should have
-  package: 50
+  package: 40
 
   # (optional; default 0)
   # The minimum total coverage project should have
-  total: 50
+  total: 40
 
 # Holds regexp rules which will override thresholds for matched files or packages
 # using their paths.

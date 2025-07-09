@@ -1,14 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/MicahParks/keyfunc"
 	"github.com/goforj/godump"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -103,13 +100,6 @@ func (a *app) callbackHandler(c echo.Context) error {
 	cookie.Expires = time.Now().Add(60 * time.Minute)
 	c.SetCookie(cookie)
 	return c.Redirect(http.StatusTemporaryRedirect, "/token")
-
-	// return c.JSON(http.StatusOK, map[string]interface{}{
-	// 	"access_token": token.AccessToken,
-	// 	"token_type":   token.TokenType,
-	// 	"expiry":       token.Expiry,
-	// 	"valid":        token.Valid(),
-	// })
 }
 
 func (a *app) tokenHandler(c echo.Context) error {
@@ -118,35 +108,9 @@ func (a *app) tokenHandler(c echo.Context) error {
 		return uihtmx.RenderPage(c.Response().Writer, TextPage("no token in cookie"), menu, "Token", "Description")
 	}
 
-	// Get the JWKS URL.
-	jwksURL := fmt.Sprintf("https://login.microsoftonline.com/%s/discovery/v2.0/keys", a.config.TenantID)
-
-	// Create a context that, when cancelled, ends the JWKS background refresh goroutine.
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	// Create the keyfunc options. Use an error handler that logs. Refresh the JWKS when a JWT signed by an unknown KID
-	// is found or at the specified interval. Rate limit these refreshes. Timeout the initial JWKS refresh request after
-	// 10 seconds. This timeout is also used to create the initial context.Context for keyfunc.Get.
-	options := keyfunc.Options{
-		Ctx: ctx,
-		RefreshErrorHandler: func(err error) {
-			log.Printf("There was an error with the jwt.Keyfunc\nError: %s", err.Error())
-		},
-		RefreshInterval:   time.Hour,
-		RefreshRateLimit:  time.Minute * 5,
-		RefreshTimeout:    time.Second * 10,
-		RefreshUnknownKID: true,
-	}
-
-	// Create the JWKS from the resource at the given URL.
-	jwks, err := keyfunc.Get(jwksURL, options)
-	if err != nil {
-		a.e.Logger.Error("Failed to create JWKS from resource at the given URL.\nError: %s", err.Error())
-	}
-	defer jwks.EndBackground()
 	var vtoken *jwt.Token
-	if vtoken, err = jwt.Parse(token.Value, jwks.Keyfunc); err != nil {
-		a.e.Logger.Error("Failed to parse the JWT.\nError: %s", err.Error())
+	if vtoken, err = jwt.Parse(token.Value, a.jwks.Keyfunc); err != nil {
+		a.e.Logger.Error("Failed to parse the JWT: %s", err.Error())
 	}
 
 	// Check if the token is valid.
