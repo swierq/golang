@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -62,7 +63,8 @@ func nl2br(text string) string {
 }
 
 func (a *app) loginHandler(c echo.Context) error {
-	url := a.entra.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	state := randomString(15)
+	url := a.entra.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	return c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
@@ -121,4 +123,13 @@ func (a *app) tokenHandler(c echo.Context) error {
 	data := godump.DumpHTML(vtoken)
 
 	return uihtmx.RenderPage(c.Response().Writer, TextPage(data), menu, "Cookies", "Description")
+}
+
+func randomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	result := make([]byte, length)
+	for i := range result {
+		result[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(result)
 }
