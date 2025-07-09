@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/goforj/godump"
@@ -26,15 +24,12 @@ var ( // app is the main application instance
 )
 
 func (a *app) printHeaders(c echo.Context) error {
-	headers := ""
-	for k, v := range c.Request().Header {
-		headers = fmt.Sprintf("%s\n%s: %s\n", headers, k, v)
-	}
-	return uihtmx.RenderPage(c.Response().Writer, TextPage(nl2br(headers)), menu, "Cookies", "Description")
+	data := godump.DumpHTML(c.Request().Header)
+	return uihtmx.RenderPage(c.Response().Writer, TextPage(data), menu, "Headers", "Description")
 }
 
 func (a *app) homeHandler(c echo.Context) error {
-	return uihtmx.RenderPage(c.Response().Writer, TextPage("Home"), menu, "Cookies", "Description")
+	return uihtmx.RenderPage(c.Response().Writer, TextPage("Home"), menu, "Home", "Description")
 }
 
 func (a *app) writeCookie(c echo.Context) error {
@@ -43,7 +38,7 @@ func (a *app) writeCookie(c echo.Context) error {
 	cookie.Value = "test"
 	cookie.Expires = time.Now().Add(1 * time.Minute)
 	c.SetCookie(cookie)
-	return uihtmx.RenderPage(c.Response().Writer, TextPage("cookie written"), menu, "Cookies", "Description")
+	return uihtmx.RenderPage(c.Response().Writer, TextPage("cookie written"), menu, "Set Cookies", "Description")
 }
 
 func (a *app) printCookies(c echo.Context) error {
@@ -51,15 +46,8 @@ func (a *app) printCookies(c echo.Context) error {
 	if len(cookies) == 0 {
 		return uihtmx.RenderPage(c.Response().Writer, TextPage("no cookies set"), menu, "Cookies", "Description")
 	}
-	cookieList := ""
-	for _, cookie := range cookies {
-		cookieList = fmt.Sprintf("%s\n%s: %s", cookieList, cookie.Name, cookie.Value)
-	}
-	return uihtmx.RenderPage(c.Response().Writer, TextPage(cookieList), menu, "Cookies", "Description")
-}
-
-func nl2br(text string) string {
-	return strings.ReplaceAll(text, "\n", "<br>")
+	data := godump.DumpHTML(cookies)
+	return uihtmx.RenderPage(c.Response().Writer, TextPage(data), menu, "Cookies", "Description")
 }
 
 func (a *app) loginHandler(c echo.Context) error {
@@ -122,7 +110,7 @@ func (a *app) tokenHandler(c echo.Context) error {
 
 	data := godump.DumpHTML(vtoken)
 
-	return uihtmx.RenderPage(c.Response().Writer, TextPage(data), menu, "Cookies", "Description")
+	return uihtmx.RenderPage(c.Response().Writer, TextPage(data), menu, "Token", "Description")
 }
 
 func randomString(length int) string {
