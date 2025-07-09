@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/urfave/cli/v2"
 )
@@ -77,7 +80,16 @@ func run(cCtx *cli.Context) error {
 		slog.Error("failed to create app", "error", err)
 		panic(err)
 	}
-	_ = a.Start()
-	return nil
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go waitOnSignal(cancel)
 
+	return a.Start(ctx)
+}
+
+func waitOnSignal(cancel context.CancelFunc) {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	cancel()
 }

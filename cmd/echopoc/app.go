@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/fs"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/swierq/golang/internal/uihtmx/ui"
@@ -165,7 +167,20 @@ func (app *app) initEcho() error {
 	return nil
 }
 
-func (app *app) Start() error {
-	app.e.Logger.Fatal(app.e.Start(fmt.Sprintf(":%d", app.config.Port)))
-	return nil
+func (app *app) Start(ctx context.Context) error {
+	go func() {
+		if err := app.e.Start(fmt.Sprintf(":%d", app.config.Port)); err != nil && err != http.ErrServerClosed {
+			app.e.Logger.Fatal("shutting down the server")
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err := app.e.Shutdown(ctx)
+	if err != nil {
+		app.e.Logger.Fatal(err)
+	}
+	return err
 }
