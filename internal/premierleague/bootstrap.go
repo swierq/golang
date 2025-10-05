@@ -239,5 +239,5 @@ func (bs *BootstrapData) GetGameWeekByOffset(offset int) (Gameweek, error) {
 			break
 		}
 	}
-	return Gameweek{}, fmt.Errorf("Game Week with offset: %d, not found.", offset)
+	return Gameweek{}, fmt.Errorf("game week with offset: %d, not found", offset)
 }

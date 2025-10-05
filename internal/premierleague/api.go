@@ -19,7 +19,11 @@ func (c *APIClient) GetFixtures() (Fixtures, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
@@ -38,7 +42,11 @@ func (c *APIClient) GetBootstrapData() (BootstrapData, error) {
 	if err != nil {
 		return BootstrapData{}, err
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return BootstrapData{}, err

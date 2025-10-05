@@ -34,6 +34,7 @@ lint:
 	golangci-lint run -v
 
 install-dev-deps:
+	go install github.com/a-h/templ/cmd/templ@latest
 	mkdir -p ~/bin
 	wget -q -O ~/go/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.17/tailwindcss-linux-x64
 	chmod u+x ~/go/bin/tailwindcss

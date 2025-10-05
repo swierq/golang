@@ -47,6 +47,6 @@ func (cfg Config) GetSlogLevel() (slog.Level, error) {
 	case "error":
 		return slog.LevelError, nil
 	default:
-		return slog.LevelError, fmt.Errorf("Log level %s not found, using default log level - error", cfg.LogLevel)
+		return slog.LevelError, fmt.Errorf("log level %s not found, using default log level - error", cfg.LogLevel)
 	}
 }

@@ -3,6 +3,7 @@ package premierleague
 import (
 	"bytes"
 	"fmt"
+
 	// "github.com/jarcoal/httpmock"
 	"io"
 	"net/http"
@@ -31,7 +32,7 @@ func TestDummy(t *testing.T) {
 	client := NewTestClient(func(req *http.Request) *http.Response {
 		fmt.Println(req.URL.Path)
 		var data []byte
-		if req.URL.Path == "/api/fixtures/" {
+		if string(req.URL.Path) == "/api/fixtures/" {
 			data, _ = os.ReadFile("testdata/fixtures.json")
 		} else if req.URL.Path == "/api/bootstrap-static/" {
 			data, _ = os.ReadFile("testdata/bootstrap-static.json")

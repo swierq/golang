@@ -64,7 +64,7 @@ func AllFixtures(team string, httpClient *http.Client, daysBack, daysForward int
 
 	fmt.Println("All Fixtures:")
 	for _, fix := range fixtures {
-		if !(fix.KickoffTime.After(start) && fix.KickoffTime.Before(end)) {
+		if !fix.KickoffTime.After(start) || !fix.KickoffTime.Before(end) {
 			continue
 		}
 		home, err := bootstrapData.GetTeamName(fix.HomeTeam)
