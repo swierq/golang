@@ -50,7 +50,10 @@ func (ts *testServer) get(t *testing.T, urlPath string, partial bool) (int, http
 		t.Fatal(err)
 	}
 
-	defer rs.Body.Close()
+	defer func() {
+		_ = rs.Body.Close()
+	}()
+
 	body, err := io.ReadAll(rs.Body)
 	if err != nil {
 		t.Fatal(err)

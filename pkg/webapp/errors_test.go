@@ -99,7 +99,9 @@ func TestErrors(t *testing.T) {
 			tt.errFunc.ServeHTTP(rr, r)
 			rs := rr.Result()
 			assert.Equal(t, tt.status, rs.StatusCode)
-			defer rs.Body.Close()
+			defer func() {
+				_ = rs.Body.Close()
+			}()
 		})
 	}
 }

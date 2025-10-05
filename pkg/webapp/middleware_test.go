@@ -46,7 +46,10 @@ func TestSecureHeaders(t *testing.T) {
 
 	assert.Equal(t, rs.StatusCode, http.StatusOK)
 
-	defer rs.Body.Close()
+	defer func() {
+		_ = rs.Body.Close()
+	}()
+
 	body, err := io.ReadAll(rs.Body)
 	if err != nil {
 		t.Fatal(err)
@@ -98,7 +101,9 @@ func TestRecoverPanic(t *testing.T) {
 			app.recoverPanic(tt.next).ServeHTTP(rr, r)
 			rs := rr.Result()
 			assert.Equal(t, tt.status, rs.StatusCode)
-			defer rs.Body.Close()
+			defer func() {
+				_ = rs.Body.Close()
+			}()
 			body, err := io.ReadAll(rs.Body)
 			if err != nil {
 				t.Fatal(err)
